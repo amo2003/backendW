@@ -1,11 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-// Only load dotenv in local development
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+require('dotenv').config({ override: false }); // local dev only, won't override Choreo injected vars
 
 const weatherRoutes = require('./Routes/weather');
 const locationRoutes = require('./Routes/locations');
