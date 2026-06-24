@@ -1,7 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+
+// Only load dotenv in local development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const weatherRoutes = require('./Routes/weather');
 const locationRoutes = require('./Routes/locations');
