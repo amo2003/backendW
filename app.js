@@ -27,6 +27,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/weather', weatherRoutes);
 app.use('/locations', locationRoutes);
 
+app.get('/', (req, res) => res.json({ status: 'ok' }));
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 const PORT = process.env.PORT || 5000;
