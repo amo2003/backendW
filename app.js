@@ -8,7 +8,14 @@ const locationRoutes = require('./Routes/locations');
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://frontend-w-9tz1.vercel.app',
+    /\.vercel\.app$/,
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 // MongoDB connection
@@ -17,8 +24,8 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('MongoDB error:', err));
 
 // Routes
-app.use('/api/weather', weatherRoutes);
-app.use('/api/locations', locationRoutes);
+app.use('/weather', weatherRoutes);
+app.use('/locations', locationRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
