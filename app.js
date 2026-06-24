@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config({ override: false }); // local dev only, won't override Choreo injected vars
+
+// Load .env for local development only
+try { require('dotenv').config(); } catch (e) {}
 
 const weatherRoutes = require('./Routes/weather');
 const locationRoutes = require('./Routes/locations');
@@ -18,17 +20,27 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB error:', err));
+// Health check first — before anything else
+app.get('/', (_req, res) => res.json({ status: 'ok' }));
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 // Routes
 app.use('/weather', weatherRoutes);
 app.use('/locations', locationRoutes);
 
-app.get('/', (req, res) => res.json({ status: 'ok' }));
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('MONGO_URI set:', !!process.env.MONGO_URI);
+  console.log('OPENWEATHER_API_KEY set:', !!process.env.OPENWEATHER_API_KEY);
+});
+
+// MongoDB connection — after server starts
+const mongoUri = process.env.MONGO_URI;
+if (mongoUri) {
+  mongoose.connect(mongoUri)
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB error:', err.message));
+} else {
+  console.error('MONGO_URI is not set — skipping MongoDB connection');
+}
